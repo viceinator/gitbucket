@@ -11,6 +11,7 @@ import gitbucket.core.model.Profile.profile._
 import gitbucket.core.model.Profile.profile.blockingApi._
 import gitbucket.core.model.Profile.dateColumnType
 import gitbucket.core.plugin.PluginRegistry
+import gitbucket.core.service.RepositoryService.RepositoryInfo
 
 trait IssuesService {
   self: AccountService with RepositoryService with LabelsService with PrioritiesService with MilestonesService =>
@@ -632,9 +633,18 @@ trait IssuesService {
       .update(priorityId, currentDate)
   }
 
-  def updateComment(issueId: Int, commentId: Int, content: String)(implicit s: Session): Int = {
+  def updateComment(issueId: Int, commentId: Int, content: String, issue: Issue)(
+    implicit s: Session,
+    context: Context
+  ): Int = {
     Issues.filter(_.issueId === issueId.bind).map(_.updatedDate).update(currentDate)
-    IssueComments.filter(_.byPrimaryKey(commentId)).map(t => (t.content, t.updatedDate)).update(content, currentDate)
+
+    val ret = IssueComments.filter(_.byPrimaryKey(commentId)).map(t => (t.content, t.updatedDate)).update(content, currentDate)
+    val r = getRepository(issue.userName, issue.repositoryName).get
+
+    PluginRegistry().getIssueHooks.foreach(_.updatedComment(commentId, content, issue, r))
+
+    ret
   }
 
   def deleteComment(owner: String, repository: String, issueId: Int, commentId: Int)(
