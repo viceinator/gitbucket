@@ -70,6 +70,12 @@ trait DashboardControllerBase extends ControllerBase {
     }
   })
 
+  get("/dashboard/issues/all")(usersOnly {
+    context.withLoginAccount { loginAccount =>
+      searchIssues(loginAccount, "all")
+    }
+  })
+
   get("/dashboard/pulls")(usersOnly {
     context.withLoginAccount { loginAccount =>
       searchPullRequests(loginAccount, "created_by")
@@ -94,12 +100,19 @@ trait DashboardControllerBase extends ControllerBase {
     }
   })
 
+  get("/dashboard/pulls/all")(usersOnly {
+    context.withLoginAccount { loginAccount =>
+      searchPullRequests(loginAccount, "all")
+    }
+  })
+
   private def getOrCreateCondition(key: String, filter: String, userName: String) = {
     val condition = IssueSearchCondition(request)
 
     filter match {
       case "assigned"  => condition.copy(assigned = Some(Some(userName)), author = None, mentioned = None)
       case "mentioned" => condition.copy(assigned = None, author = None, mentioned = Some(userName))
+      case "all"       => condition.copy(assigned = None, author = None, mentioned = None)
       case _           => condition.copy(assigned = None, author = Some(userName), mentioned = None)
     }
   }
@@ -121,6 +134,7 @@ trait DashboardControllerBase extends ControllerBase {
       filter match {
         case "assigned"  => condition.copy(assigned = Some(Some(userName)))
         case "mentioned" => condition.copy(mentioned = Some(userName))
+        case "all"       => condition.copy()
         case _           => condition.copy(author = Some(userName))
       },
       filter,
@@ -163,6 +177,7 @@ trait DashboardControllerBase extends ControllerBase {
       filter match {
         case "assigned"  => condition.copy(assigned = Some(Some(userName)))
         case "mentioned" => condition.copy(mentioned = Some(userName))
+        case "all"       => condition.copy()
         case _           => condition.copy(author = Some(userName))
       },
       filter,
