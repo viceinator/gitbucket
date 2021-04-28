@@ -48,7 +48,7 @@ trait DashboardControllerBase extends ControllerBase {
 
   get("/dashboard/issues")(usersOnly {
     context.withLoginAccount { loginAccount =>
-      searchIssues(loginAccount, "created_by")
+      searchIssues(loginAccount, "all")
     }
   })
 
@@ -78,7 +78,7 @@ trait DashboardControllerBase extends ControllerBase {
 
   get("/dashboard/pulls")(usersOnly {
     context.withLoginAccount { loginAccount =>
-      searchPullRequests(loginAccount, "created_by")
+      searchPullRequests(loginAccount, "all")
     }
   })
 
