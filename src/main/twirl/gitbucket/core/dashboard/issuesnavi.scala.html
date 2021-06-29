@@ -13,6 +13,7 @@
 </ul>
 
 <div class="btn-group pull-right" data-toggle="buttons">
+  <a class="switch btn btn-default @if(filter == "all" ){active}" href="@context.path/dashboard/@active/all@condition.copy(author = None, assigned = None).toURL">All</a>
   <a class="switch btn btn-default @if(filter == "created_by"){active}" href="@context.path/dashboard/@active/created_by@condition.copy(author = None, assigned = None).toURL">Created</a>
   <a class="switch btn btn-default @if(filter == "assigned"  ){active}" href="@context.path/dashboard/@active/assigned@condition.copy(author = None, assigned = None).toURL">Assigned</a>
   <a class="switch btn btn-default @if(filter == "mentioned" ){active}" href="@context.path/dashboard/@active/mentioned@condition.copy(author = None, assigned = None).toURL">Mentioned</a>
